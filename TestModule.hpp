@@ -8,7 +8,7 @@ constructor_args:
   - test_arg2: abc
   - test_arg3: ABCD
   - test_arg4: std::errc::permission_denied
-  - test_arg5: '@BlinkLED'
+  - test_arg5: '@BlinkLED_0'
 template_args:
   - test_temp1: std::errc
   - test_temp2: int
