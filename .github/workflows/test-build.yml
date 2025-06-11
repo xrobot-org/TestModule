@@ -1,0 +1,90 @@
+name: XRobot Module Build Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      XR_MODULE_NAME: ${{ github.event.repository.name }}
+    steps:
+      - name: Checkout current module repo to ./Modules/${{ env.XR_MODULE_NAME }}
+        uses: actions/checkout@v4
+        with:
+          path: Modules/${{ env.XR_MODULE_NAME }}
+
+      - name: Create main.cpp
+        run: |
+          cat > main.cpp <<'EOF'
+          #include <iostream>
+          #include "xrobot_main.hpp"
+          #include "libxr.hpp"
+
+          int main() {
+              LibXR::PlatformInit();
+              LibXR::STDIO::Printf("This is XRobot Module Template Test\n");
+              LibXR::HardwareContainer hw;
+              XRobotMain(hw);
+              return 0;
+          }
+          EOF
+
+      - name: Create minimal CMakeLists.txt
+        run: |
+          cat > CMakeLists.txt <<'EOF'
+          cmake_minimum_required(VERSION 3.16)
+          project(xrobot_mod_test CXX)
+          set(CMAKE_CXX_STANDARD 17)
+          add_executable(xr_test main.cpp)
+          target_include_directories(xr_test PRIVATE ${CMAKE_SOURCE_DIR}/libxr ${CMAKE_SOURCE_DIR}/Modules)
+          target_link_libraries(xr_test pthread)
+          EOF
+
+      - name: Pull libxr to ./libxr
+        run: git clone --depth=1 https://github.com/Jiu-xiao/libxr ./libxr
+
+      - name: Setup Python & Install deps
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install pip dependencies (pyyaml, requests)
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml requests
+
+      - name: Add XRobot tools to PATH
+        run: |
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install xrobot toolchain (assumes pyproject/tar.gz/pip install .)
+        run: |
+          pip install .
+
+      - name: Run xrobot_setup (first time，自动生成模板)
+        run: |
+          xrobot_setup || true
+
+      - name: Run xrobot_setup (第二遍，拉依赖、生成代码)
+        run: |
+          xrobot_setup
+
+      - name: Add BlinkLED module
+        run: |
+          xrobot_add_mod BlinkLED
+
+      - name: Add this repo module
+        run: |
+          xrobot_add_mod ${{ env.XR_MODULE_NAME }}
+
+      - name: Generate main again
+        run: |
+          xrobot_setup
+
+      - name: Build
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          make
