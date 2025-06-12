@@ -7,8 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/xrobot-org/docker-image-linux:main
+      options: --user 0  # 用 root 方便包管理和 pip 安装
+
     env:
       XR_MODULE_NAME: ${{ github.event.repository.name }}
+
     steps:
       - name: Checkout current module repo to ./Modules/${{ env.XR_MODULE_NAME }}
         uses: actions/checkout@v4
@@ -34,25 +39,23 @@ jobs:
       - name: Create minimal CMakeLists.txt
         run: |
           cat > CMakeLists.txt <<'EOF'
-          cmake_minimum_required(VERSION 3.16)
           project(xrobot_mod_test CXX)
           set(CMAKE_CXX_STANDARD 17)
           add_executable(xr_test main.cpp)
-          target_include_directories(xr_test PRIVATE ${CMAKE_SOURCE_DIR}/libxr ${CMAKE_SOURCE_DIR}/Modules)
-          target_link_libraries(xr_test pthread)
+          add_subdirectory(libxr)
+          target_include_directories(xr_test PUBLIC $<TARGET_PROPERTY:xr,INTERFACE_INCLUDE_DIRECTORIES> ${CMAKE_SOURCE_DIR}/User)
+          target_link_libraries(xr_test PUBLIC xr)
+          include(Modules/CMakeLists.txt)
           EOF
 
       - name: Pull libxr to ./libxr
         run: git clone --depth=1 https://github.com/Jiu-xiao/libxr ./libxr
 
       - name: Setup Python & Install deps
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.11
-      - name: Install pip dependencies (pyyaml, requests)
+        # 容器内通常已预装 python，可省略 actions/setup-python
         run: |
-          python -m pip install --upgrade pip
-          pip install pyyaml requests
+          python3 -m pip install --upgrade pip
+          pip3 install pyyaml requests
 
       - name: Add XRobot tools to PATH
         run: |
@@ -60,23 +63,23 @@ jobs:
 
       - name: Install xrobot toolchain (assumes pyproject/tar.gz/pip install .)
         run: |
-          pip install .
+          pip3 install xrobot libxr
 
-      - name: Run xrobot_setup (first time，自动生成模板)
+      - name: Run xrobot_setup
         run: |
           xrobot_setup || true
 
-      - name: Run xrobot_setup (第二遍，拉依赖、生成代码)
+      - name: Run xrobot_init_mod
         run: |
-          xrobot_setup
+          xrobot_init_mod
 
       - name: Add BlinkLED module
         run: |
-          xrobot_add_mod BlinkLED
+          xrobot_add_mod BlinkLED --instance-id BlinkLED_0
 
       - name: Add this repo module
         run: |
-          xrobot_add_mod ${{ env.XR_MODULE_NAME }}
+          xrobot_add_mod ${{ env.XR_MODULE_NAME }} && cat User/xrobot.yaml
 
       - name: Generate main again
         run: |
