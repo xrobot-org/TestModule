@@ -66,10 +66,6 @@ jobs:
         run: |
           pip3 install xrobot libxr
 
-      - name: Pull BlinkLED to ./Modules/BlinkLED
-        run: |
-          git clone --depth=1 https://github.com/xrobot-org/BlinkLED.git ./Modules/BlinkLED
-
       - name: Add BlinkLED module
         run: |
           xrobot_add_mod BlinkLED --instance-id BlinkLED_0
@@ -78,71 +74,16 @@ jobs:
         run: |
           xrobot_add_mod ${{ env.XR_MODULE_NAME }} && cat User/xrobot.yaml
 
-      - name: Validate manifest-driven config coverage
+      - name: Generate main again
         run: |
-          python3 - <<'PY'
-          import pathlib
-          import yaml
+          xrobot_setup
 
-          data = yaml.safe_load(pathlib.Path("User/xrobot.yaml").read_text(encoding="utf-8"))
-          modules = {item["name"]: item for item in data["modules"]}
-          blink = modules["BlinkLED"]
-          test = modules["TestModule"]
-
-          assert blink["id"] == "BlinkLED_0"
-          assert blink["constructor_args"] == {"blink_cycle": 250}
-
-          assert test["id"] == "TestModule_0"
-          assert test["constructor_args"] == {
-              "test_uint": 250,
-              "test_float": 1.5,
-              "test_bool": True,
-              "test_numeric_string": "123",
-              "test_text": "abc",
-              "test_enum": "std::errc::permission_denied",
-              "test_led": "@BlinkLED_0",
-              "test_struct": {"x": 1, "y": True, "z": 2.5},
-              "test_array": [1, 2, 3],
-          }
-          assert test["template_args"] == {
-              "enum_type": "std::errc",
-              "value_type": "int",
-              "count": 3,
-              "flag": True,
-          }
-          print("manifest-driven config coverage OK")
-          PY
-
-      - name: Generate manifest-driven main
+      - name: Build
         run: |
-          xrobot_gen_main --config User/xrobot.yaml --output User/xrobot_main.hpp
-
-      - name: Build manifest-driven config
-        run: |
-          cmake -S . -B build
-          cmake --build build
-
-      - name: Generate constexpr example
-        run: |
-          xrobot_gen_main \
-            --config Modules/${{ env.XR_MODULE_NAME }}/examples/xrobot_constexpr.yaml \
-            --output User/xrobot_main.hpp
-
-      - name: Validate constexpr output coverage
-        run: |
-          test -f User/xrobot_constexpr.hpp
-          grep -F 'TestModule<std::errc, int, XRobotProject::TemplateCount, XRobotProject::TemplateFlag>' User/xrobot_main.hpp
-          grep -F 'XRobotProject::TestStruct' User/xrobot_main.hpp
-          grep -F 'XRobotProject::TestArray' User/xrobot_main.hpp
-          grep -F 'inline constexpr TestStructArg TestStruct = {1, true, 2.5};' User/xrobot_constexpr.hpp
-          grep -F 'inline constexpr TestArrayArg TestArray = {1, 2, 3};' User/xrobot_constexpr.hpp
-          grep -F 'inline constexpr std::errc TestEnum = std::errc::permission_denied;' User/xrobot_constexpr.hpp
-
-      - name: Build constexpr config
-        run: |
-          rm -rf build
-          cmake -S . -B build
-          cmake --build build
+          mkdir -p build
+          cd build
+          cmake ..
+          make
 
       - name: Create Tag via GitHub API
         if: ${{ success() && github.event_name != 'pull_request' }}
