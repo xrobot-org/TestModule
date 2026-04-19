@@ -2,51 +2,77 @@
 
 // clang-format off
 /* === MODULE MANIFEST V2 ===
-module_description: 测试模块 / A simple test module
+module_description: Test module that covers currently supported XRobot config syntax
 constructor_args:
-  - test_arg1: 250
-  - test_arg2: abc
-  - test_arg3: ABCD
-  - test_arg4: std::errc::permission_denied
-  - test_arg5: '@BlinkLED_0'
+  - test_uint: 250
+  - test_float: 1.5
+  - test_bool: true
+  - test_numeric_string: '123'
+  - test_text: abc
+  - test_enum: std::errc::permission_denied
+  - test_led: '@BlinkLED_0'
+  - test_struct:
+      x: 1
+      y: true
+      z: 2.5
+  - test_array:
+      - 1
+      - 2
+      - 3
 template_args:
-  - test_temp1: std::errc
-  - test_temp2: int
-  - test_temp3: 3
+  - enum_type: std::errc
+  - value_type: int
+  - count: 3
+  - flag: true
 required_hardware: []
 depends:
-  - xrobot-org/BlinkLED@master
   - xrobot-org/BlinkLED
 === END MANIFEST === */
 // clang-format on
 
 #include "app_framework.hpp"
+#include <cstdint>
 #include <system_error>
+#include <type_traits>
 #include "BlinkLED.hpp"
 #include "libxr.hpp"
 
-template <typename Type1, typename Type2, int Type3>
-class TestModule : public LibXR::Application
-{
-public:
-  TestModule(LibXR::HardwareContainer &hw, LibXR::ApplicationManager &app,
-             uint32_t test_arg1, const char *test_arg2, const char *test_arg3,
-             Type1 test_arg4, BlinkLED &test_arg5)
-  {
-    static_assert(std::is_same_v<Type1, std::errc>);
-    static_assert(std::is_same_v<Type2, int>);
-    static_assert(Type3 == 3);
+struct TestStructArg {
+  int x;
+  bool y;
+  float z;
+};
 
-    LibXR::STDIO::Printf("TestModule: test_arg1=%d, test_arg2=%s, test_arg3=%s, test_arg4=%d, test_arg5=%p\n",
-                         test_arg1, test_arg2, test_arg3, test_arg4, &test_arg5);
-    
+struct TestArrayArg {
+  int values[3];
+};
+
+template <typename EnumType, typename ValueType, int Count, bool Flag>
+class TestModule : public LibXR::Application {
+ public:
+  TestModule(LibXR::HardwareContainer& hw, LibXR::ApplicationManager& app,
+             uint32_t test_uint, float test_float, bool test_bool,
+             uint32_t test_numeric_string, const char* test_text,
+             EnumType test_enum, BlinkLED& test_led, TestStructArg test_struct,
+             TestArrayArg test_array) {
+    UNUSED(hw);
+
+    static_assert(std::is_same_v<EnumType, std::errc>);
+    static_assert(std::is_same_v<ValueType, int>);
+    static_assert(Count == 3);
+    static_assert(Flag);
+
+    LibXR::STDIO::Printf(
+        "TestModule: uint=%u, float=%f, bool=%d, numstr=%u, text=%s, enum=%d, led=%p, struct={%d,%d,%f}, array={%d,%d,%d}\n",
+        test_uint, test_float, test_bool, test_numeric_string, test_text,
+        static_cast<int>(test_enum), &test_led, test_struct.x, test_struct.y,
+        test_struct.z, test_array.values[0], test_array.values[1],
+        test_array.values[2]);
+
     app.Register(*this);
   }
 
-  void OnMonitor() override
-  {
+  void OnMonitor() override {
     LibXR::STDIO::Printf("TestModule: OnMonitor\n");
   }
-
-private:
 };

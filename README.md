@@ -1,22 +1,28 @@
 # TestModule
 
-测试模块 / A simple test module
+Test module that covers the currently supported XRobot config syntax.
+
+## Covered Syntax
+- Integer literal constructor argument
+- Float literal constructor argument
+- Boolean literal constructor argument
+- Numeric string constructor argument (`'123'` -> raw numeric token)
+- Plain string constructor argument
+- Scoped-name constructor argument (`std::errc::permission_denied`)
+- Instance reference constructor argument (`@BlinkLED_0`)
+- Mapping aggregate constructor argument
+- List aggregate constructor argument
+- Raw string template arguments (`std::errc`, `int`)
+- Non-type integer template argument (`3`)
+- Non-type boolean template argument (`true`)
 
 ## Required Hardware
 None
 
-## Constructor Arguments
-- `test_arg1`: 250
-- `test_arg2`: abc
-- `test_arg3`: ABCD
-- `test_arg4`: std::errc::permission_denied
-- `test_arg5`: @BlinkLED
-
-## Template Arguments
-- `test_temp1`: std::errc
-- `test_temp2`: int
-- `test_temp3`: 3
-
 ## Depends
-- xrobot-org/BlinkLED@master
 - xrobot-org/BlinkLED
+
+## Example
+- Manifest-driven defaults are encoded in `TestModule.hpp` and are meant to be exercised through `xrobot_add_mod TestModule`.
+- A project-level `constexpr` sample config is provided at `examples/xrobot_constexpr.yaml`.
+- CI covers both paths so the checked-in syntax stays aligned with the currently released `xrobot` generator.

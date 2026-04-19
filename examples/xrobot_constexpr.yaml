@@ -1,0 +1,67 @@
+global_settings:
+  monitor_sleep_ms: 5
+
+constexpr_includes:
+  - system_error
+
+constexprs:
+  TestUint:
+    type: uint32_t
+    value: 250
+  TestFloat:
+    type: float
+    value: 1.5
+  TestBool:
+    type: bool
+    value: true
+  TestNumericString:
+    type: uint32_t
+    value: 123
+  TestText:
+    type: const char *
+    value: abc
+  TestEnum:
+    type: std::errc
+    value: std::errc::permission_denied
+  TestStruct:
+    type: TestStructArg
+    value:
+      x: 1
+      y: true
+      z: 2.5
+  TestArray:
+    type: TestArrayArg
+    value:
+      - 1
+      - 2
+      - 3
+  TemplateCount:
+    type: int
+    value: 3
+  TemplateFlag:
+    type: bool
+    value: true
+
+modules:
+  - id: BlinkLED_0
+    name: BlinkLED
+    constructor_args:
+      blink_cycle: 250
+
+  - id: TestModule_0
+    name: TestModule
+    template_args:
+      enum_type: std::errc
+      value_type: int
+      count: {constexpr: TemplateCount}
+      flag: {constexpr: TemplateFlag}
+    constructor_args:
+      test_uint: {constexpr: TestUint}
+      test_float: {constexpr: TestFloat}
+      test_bool: {constexpr: TestBool}
+      test_numeric_string: {constexpr: TestNumericString}
+      test_text: {constexpr: TestText}
+      test_enum: {constexpr: TestEnum}
+      test_led: '@BlinkLED_0'
+      test_struct: {constexpr: TestStruct}
+      test_array: {constexpr: TestArray}
