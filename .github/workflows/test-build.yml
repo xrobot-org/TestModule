@@ -66,6 +66,14 @@ jobs:
         run: |
           pip3 install xrobot libxr
 
+      - name: Run xrobot_setup
+        run: |
+          xrobot_setup || true
+
+      - name: Run xrobot_init_mod
+        run: |
+          xrobot_init_mod
+
       - name: Add BlinkLED module
         run: |
           xrobot_add_mod BlinkLED --instance-id BlinkLED_0
