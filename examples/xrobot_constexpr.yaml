@@ -1,0 +1,69 @@
+global_settings:
+  monitor_sleep_ms: 5
+
+constexpr_namespace: TestModuleConstexpr
+
+constexpr_includes:
+  - <system_error>
+
+constexprs:
+  TestArg1:
+    type: uint32_t
+    value: 250
+  TestArg2:
+    type: const char *
+    value: {string: abc}
+  TestArg3:
+    type: uint32_t
+    value: 123
+  TestArg4:
+    type: std::errc
+    value: {expr: std::errc::permission_denied}
+  TestArg6:
+    type: float
+    value: 1.5
+  TestArg7:
+    type: bool
+    value: true
+  TestArg8:
+    type: TestStructArg
+    value:
+      x: 1
+      y: true
+      z: 2.5
+  TestArg9:
+    type: TestArrayArg
+    value:
+      - 1
+      - 2
+      - 3
+  TestTemp3:
+    type: int
+    value: 3
+  TestTemp4:
+    type: bool
+    value: true
+
+modules:
+  - id: BlinkLED_0
+    name: BlinkLED
+    constructor_args:
+      blink_cycle: 250
+
+  - id: TestModule_0
+    name: TestModule
+    template_args:
+      test_temp1: std::errc
+      test_temp2: int
+      test_temp3: {constexpr: TestTemp3}
+      test_temp4: {constexpr: TestTemp4}
+    constructor_args:
+      test_arg1: {constexpr: TestArg1}
+      test_arg2: {constexpr: TestArg2}
+      test_arg3: {constexpr: TestArg3}
+      test_arg4: {constexpr: TestArg4}
+      test_arg5: '@BlinkLED_0'
+      test_arg6: {constexpr: TestArg6}
+      test_arg7: {constexpr: TestArg7}
+      test_arg8: {constexpr: TestArg8}
+      test_arg9: {constexpr: TestArg9}
