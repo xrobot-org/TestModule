@@ -1,8 +1,10 @@
 global_settings:
   monitor_sleep_ms: 5
 
+constexpr_namespace: TestModuleConstexpr
+
 constexpr_includes:
-  - system_error
+  - <system_error>
 
 constexprs:
   TestArg1:
@@ -10,13 +12,13 @@ constexprs:
     value: 250
   TestArg2:
     type: const char *
-    value: abc
+    value: {string: abc}
   TestArg3:
     type: uint32_t
     value: 123
   TestArg4:
     type: std::errc
-    value: std::errc::permission_denied
+    value: {expr: std::errc::permission_denied}
   TestArg6:
     type: float
     value: 1.5

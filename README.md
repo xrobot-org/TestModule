@@ -23,7 +23,7 @@ None
 - `test_temp4`: true
 
 ## Examples / 示例
-- `examples/xrobot_constexpr.yaml`: 项目级 `constexpr_includes`、`constexprs` 与 `{constexpr: Name}` 用法 / Project-level `constexpr_includes`, `constexprs`, and `{constexpr: Name}` usage
+- `examples/xrobot_constexpr.yaml`: 项目级 `constexpr_namespace`、`constexpr_includes`、`constexprs`、`{constexpr: Name}`、`{expr: ...}` 与 `{string: ...}` 用法 / Project-level `constexpr_namespace`, `constexpr_includes`, `constexprs`, `{constexpr: Name}`, `{expr: ...}`, and `{string: ...}` usage
 
 ## Depends
 - xrobot-org/BlinkLED@master
