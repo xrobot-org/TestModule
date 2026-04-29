@@ -32,6 +32,7 @@ depends:
 // clang-format on
 
 #include "app_framework.hpp"
+#include <cstdint>
 #include <system_error>
 #include "BlinkLED.hpp"
 #include "libxr.hpp"
@@ -62,9 +63,11 @@ public:
     static_assert(Type3 == 3);
     static_assert(Type4);
 
-    LibXR::STDIO::Printf("TestModule: test_arg1=%d, test_arg2=%s, test_arg3=%d, test_arg4=%d, test_arg5=%p, test_arg6=%f, test_arg7=%d, test_arg8={%d,%d,%f}, test_arg9={%d,%d,%d}\n",
-                         test_arg1, test_arg2, test_arg3, test_arg4, &test_arg5, test_arg6, test_arg7,
-                         test_arg8.x, test_arg8.y, test_arg8.z,
+    LibXR::STDIO::Printf<"TestModule: test_arg1=%u, test_arg2=%s, test_arg3=%u, test_arg4=%d, test_arg5=%x, test_arg6=%f, test_arg7=%u, test_arg8={%d,%u,%f}, test_arg9={%d,%d,%d}\n">(
+                         test_arg1, test_arg2, test_arg3, test_arg4,
+                         static_cast<unsigned>(reinterpret_cast<std::uintptr_t>(&test_arg5)),
+                         test_arg6, static_cast<unsigned>(test_arg7),
+                         test_arg8.x, static_cast<unsigned>(test_arg8.y), test_arg8.z,
                          test_arg9.values[0], test_arg9.values[1], test_arg9.values[2]);
     
     app.Register(*this);
@@ -72,7 +75,7 @@ public:
 
   void OnMonitor() override
   {
-    LibXR::STDIO::Printf("TestModule: OnMonitor\n");
+    LibXR::STDIO::Printf<"TestModule: OnMonitor\n">();
   }
 
 private:
