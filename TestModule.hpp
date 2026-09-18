@@ -31,9 +31,16 @@ template <typename Type1, typename Type2, int Type3, bool Type4>
 class TestModule
 {
  public:
-  TestModule(uint32_t test_arg1, const char* test_arg2, uint32_t test_arg3,
-             Type1 test_arg4, BlinkLED& test_arg5, float test_arg6, bool test_arg7,
-             TestStructArg test_arg8, TestArrayArg test_arg9)
+  TestModule(
+      BlinkLED& test_arg5,
+      uint32_t test_arg1 = 250,
+      const char* test_arg2 = "abc",
+      uint32_t test_arg3 = 123,
+      Type1 test_arg4 = std::errc::permission_denied,
+      float test_arg6 = 1.5f,
+      bool test_arg7 = true,
+      TestStructArg test_arg8 = {.x = 1, .y = true, .z = 2.5},
+      TestArrayArg test_arg9 = {1, 2, 3})
   {
     static_assert(std::is_same_v<Type1, std::errc>);
     static_assert(std::is_same_v<Type2, int>);
