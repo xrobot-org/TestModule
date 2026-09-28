@@ -40,7 +40,7 @@ class TestModule
       float test_arg6 = 1.5f,
       bool test_arg7 = true,
       TestStructArg test_arg8 = {.x = 1, .y = true, .z = 2.5},
-      TestArrayArg test_arg9 = {1, 2, 3})
+      TestArrayArg test_arg9 = {.values = {1, 2, 3}})
   {
     static_assert(std::is_same_v<Type1, std::errc>);
     static_assert(std::is_same_v<Type2, int>);
