@@ -127,3 +127,9 @@ Run `xrobot setup` again to generate `User/xrobot_main.hpp`.
 `xrobot module show .` in this repository, or
 `xrobot module show Modules/xrobot-org/TestModule` in a BSP, prints the manifest
 and the current constructor.
+
+`examples/xrobot_constexpr.yaml` 是同样两个实例的完整配置，参数取自项目级
+`constexprs`（生成为 `TestModuleConstexpr` 命名空间中的 `inline constexpr` 值）。
+`examples/xrobot_constexpr.yaml` is a complete configuration of the same two
+instances whose arguments come from project-level `constexprs` (generated as
+`inline constexpr` values in namespace `TestModuleConstexpr`).
