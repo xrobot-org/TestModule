@@ -100,10 +100,7 @@ modules:
           y: true
           z: 2.5
       - test_arg9:
-          values:
-            - 1
-            - 2
-            - 3
+          values: '{1, 2, 3}'
 ```
 
 `examples/xrobot_constexpr.yaml` 是同样两个实例的完整配置，参数取自项目级 `constexprs`，生成为命名空间 `TestModuleConstexpr` 中的 `inline constexpr` 值。
