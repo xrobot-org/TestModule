@@ -76,19 +76,19 @@ Configuration parameters:
 ```yaml
 modules:
   - module: xrobot-org/BlinkLED
-    id: blinkled
+    id: blink_led
     args:
       - led: LED_B
       - blink_cycle: 250
   - module: xrobot-org/TestModule
-    id: testmodule
+    id: testmodule_0
     template_args:
       - std::errc
       - int
       - 3
       - true
     args:
-      - test_arg5: blinkled
+      - test_arg5: blink_led
       - test_arg1: 250
       - test_arg2: "abc"
       - test_arg3: 123
