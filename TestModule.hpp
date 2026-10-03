@@ -2,7 +2,7 @@
 
 // clang-format off
 /* === MODULE MANIFEST V2 ===
-module_description: 测试模块 / A simple test module
+module_description: XRobot 工具链的测试夹具模块 / Test fixture Module for the XRobot tool chain
 depends:
 - id: xrobot-org/BlinkLED
   ref: same-or-dev
