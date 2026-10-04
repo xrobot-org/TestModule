@@ -1,16 +1,16 @@
 # TestModule
 
-XRobot 工具链的测试夹具模块，覆盖模板参数和各类构造参数 / Test fixture Module for the XRobot tool chain, covering template parameters and the constructor argument kinds
+XRobot 工具链的测试夹具模块 / Test fixture Module for the XRobot tool chain
 
 ## 1. 模块作用 / Purpose
 
 TestModule 提供一个带模板参数的 Module，构造参数涵盖整数、字符串、枚举、浮点、布尔、聚合结构体、数组结构体以及对另一个 Module 实例的引用。
 
-构造时，TestModule 用 `static_assert` 要求模板参数为 `std::errc, int, 3, true`，然后通过 `LibXR::STDIO::Printf` 打印全部构造参数，其中 `test_arg5` 打印为 `BlinkLED` 实例的地址。`OnMonitor()` 在每次 monitor 循环中打印 `TestModule: OnMonitor`。
+TestModule 用 `static_assert` 在编译时要求模板参数为 `std::errc, int, 3, true`。构造时，TestModule 通过 `LibXR::STDIO::Printf` 打印全部构造参数，其中 `test_arg5` 打印为 `BlinkLED` 实例的地址。`OnMonitor()` 在每次 monitor 循环中打印 `TestModule: OnMonitor`。
 
 TestModule is a Module with template parameters whose constructor arguments cover integer, string, enum, float, bool, aggregate struct, array struct and a reference to another Module instance.
 
-Upon construction, TestModule uses `static_assert` to require the template arguments `std::errc, int, 3, true`, then prints every constructor argument through `LibXR::STDIO::Printf`, with `test_arg5` printed as the address of the `BlinkLED` instance. `OnMonitor()` prints `TestModule: OnMonitor` on every monitor cycle.
+TestModule uses `static_assert` to require the template arguments `std::errc, int, 3, true` at compile time. Upon construction, it prints every constructor argument through `LibXR::STDIO::Printf`, with `test_arg5` printed as the address of the `BlinkLED` instance. `OnMonitor()` prints `TestModule: OnMonitor` on every monitor cycle.
 
 ## 2. 构造接口 / Constructor
 
@@ -71,7 +71,7 @@ Configuration parameters:
 
 `xrobot instance add` 写入 `xrobot-org/BlinkLED` 与 `xrobot-org/TestModule` 的实例（`template_args` 填写为上述取值），`test_arg5` 填写为 `BlinkLED` 实例的 id，`led` 填写为 BSP 通过 `XR_REGISTER`（硬件注册）注册的 GPIO 名称：
 
-`xrobot instance add` writes the instances of `xrobot-org/BlinkLED` and `xrobot-org/TestModule` (with `template_args` set to the values above), with `test_arg5` set to the id of the `BlinkLED` instance and `led` set to a GPIO name registered by the BSP's `XR_REGISTER` (Registration):
+`xrobot instance add` writes the instances of `xrobot-org/BlinkLED` and `xrobot-org/TestModule` (with `template_args` set to the values above), with `test_arg5` set to the id of the `BlinkLED` instance and `led` set to a GPIO name registered by the BSP with `XR_REGISTER` (Registration):
 
 ```yaml
 modules:
